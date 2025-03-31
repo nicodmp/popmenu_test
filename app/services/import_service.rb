@@ -29,18 +29,21 @@ class ImportService
       nil
     end
 
-    def process_restaurant(rest_data)
-      restaurant = Restaurant.find_or_create_by!(name: rest_data["name"]) do |r|
-        r.location   = rest_data["location"] || ""
-        r.categories = rest_data["categories"] || []
-      end
 
-      (rest_data["menus"] || []).each do |menu_data|
-        process_menu(restaurant, menu_data)
-      end
-    rescue ActiveRecord::RecordInvalid => e
-      @logs << { restaurant: rest_data["name"], status: "Failed", error: e.message }
+def process_restaurant(rest_data)
+  ActiveRecord::Base.transaction do
+    restaurant = Restaurant.find_or_create_by!(name: rest_data["name"]) do |r|
+      r.location   = rest_data["location"] || ""
+      r.categories = rest_data["categories"] || []
     end
+
+    (rest_data["menus"] || []).each do |menu_data|
+      process_menu(restaurant, menu_data)
+    end
+  end
+rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved => e
+  @logs << { restaurant: rest_data["name"], status: "Failed", error: e.message }
+end
 
     def process_menu(restaurant, menu_data)
       menu = restaurant.menus.find_or_create_by!(name: menu_data["name"]) do |m|
