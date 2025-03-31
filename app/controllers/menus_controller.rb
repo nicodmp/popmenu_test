@@ -8,6 +8,7 @@ class MenusController < ApplicationController
       @menus = @restaurant.menus
     else
       @menus = Menu.all
+    end
 
     render json: @menus, include: :menu_items
   end

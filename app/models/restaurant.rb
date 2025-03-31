@@ -8,9 +8,9 @@ class Restaurant < ApplicationRecord
 
   private
 
-#   def must_have_at_least_one_category
-#     if categories.blank? || categories.reject(&:blank?).empty?
-#       errors.add(:categories, "restaurant must have at least one category")
-#     end
-#   end
+  #   def must_have_at_least_one_category
+  #     if categories.blank? || categories.reject(&:blank?).empty?
+  #       errors.add(:categories, "restaurant must have at least one category")
+  #     end
+  #   end
 end
