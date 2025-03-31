@@ -6,6 +6,6 @@ Rails.application.routes.draw do
   end
 
   resources :menu_items, only: [ :index, :show ]
-  resources :menu_menu_items, only: [ :index ]
+  resources :menu_menu_items, only: [ :index, :show ]
   post "/import", to: "imports#create"
 end

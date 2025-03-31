@@ -43,10 +43,14 @@ RSpec.describe ImportService, type: :service do
   let(:invalid_json) { "not a valid json" }
 
   context 'when processing valid JSON' do
-    it 'creates the restaurant, menu, and menu items, and logs successes' do
+    it 'creates the restaurant, menu, and menu items, persists records and logs successes' do
       service = ImportService.new(valid_json)
-      expect(service.process).to be true
+      service.process
       logs = service.logs
+
+      expect(Restaurant.count).to eq(1)
+      expect(Menu.count).to eq(1)
+      expect(MenuItem.count).to eq(2)
 
       expect(logs).not_to be_empty
       expect(logs.all? { |log| log[:status] == "Success" }).to be true
@@ -68,6 +72,13 @@ RSpec.describe ImportService, type: :service do
       expect(service.process).to be true
       logs = service.logs
 
+      expect(Restaurant.count).to eq(1)
+      expect(Menu.count).to eq(1)
+      expect(MenuItem.count).to eq(1)
+
+      expect(logs).not_to be_empty
+      expect(logs.all? { |log| log[:status] == "Success" }).to be true
+
       restaurant = Restaurant.find_by(name: "Alternate Restaurant")
       expect(restaurant).not_to be_nil
       expect(restaurant.menus.first.name).to eq("dinner")
@@ -82,13 +93,14 @@ RSpec.describe ImportService, type: :service do
     it 'logs a JSON parsing error and returns false' do
       service = ImportService.new(invalid_json)
       expect(service.process).to be false
+
       logs = service.logs
       expect(logs.first[:error]).to match(/Invalid JSON/)
     end
   end
 
   context 'when encountering duplicate menu items within the same menu' do
-    let(:json_with_duplicates) do
+    let(:json_with_duplicate_menu_item) do
       '{
         "restaurants": [
           {
@@ -107,10 +119,14 @@ RSpec.describe ImportService, type: :service do
       }'
     end
 
-    it 'logs a failure for the duplicate association' do
-      service = ImportService.new(json_with_duplicates)
+    it 'logs a failure for the duplicate association and rolls backs the transaction' do
+      initial_association_count = MenuMenuItem.count
+
+      service = ImportService.new(json_with_duplicate_menu_item)
       service.process
       logs = service.logs
+
+      expect(MenuMenuItem.count).to eq(initial_association_count)
 
       success_logs = logs.select { |log| log[:status] == "Success" && log[:menu_item] == "Burger" }
       failure_logs = logs.select { |log| log[:status] == "Failed" && log[:menu_item] == "Burger" }
