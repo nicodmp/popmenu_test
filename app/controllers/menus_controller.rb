@@ -1,9 +1,13 @@
 class MenusController < ApplicationController
   before_action :set_menu, only: %i[ show ]
 
-  # GET /menus
+  # GET /restaurants/:restaurant_id/menus or GET /menus
   def index
-    @menus = Menu.all
+    if params[:restaurant_id]
+      @restaurant = Restaurant.find(params[:restaurant_id])
+      @menus = @restaurant.menus
+    else
+      @menus = Menu.all
 
     render json: @menus, include: :menu_items
   end

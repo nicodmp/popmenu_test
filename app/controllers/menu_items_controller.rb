@@ -3,13 +3,8 @@ class MenuItemsController < ApplicationController
 
   # GET /menu_items
   def index
-    if params[:menu_id]
-      menu = Menu.find(params[:menu_id])
-      @menu_items = menu.menu_items
-    else
-      @menu_items = MenuItem.all
-    end
-
+    @menu_items = MenuItem.all
+  
     render json: @menu_items
   end
 
@@ -52,6 +47,6 @@ class MenuItemsController < ApplicationController
     end
 
     def menu_item_params
-      params.require(:menu_item).permit(:name, :description, :price, :category, :menu_id)
+      params.require(:menu_item).permit(:name, :description, :category, :menu_id)
     end
 end
