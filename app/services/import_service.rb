@@ -81,6 +81,5 @@ end
         status: "Failed",
         error: e.message
       }
-      raise ActiveRecord::Rollback
     end
 end
