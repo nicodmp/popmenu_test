@@ -1,9 +1,31 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+require 'faker'
+require 'factory_bot_rails'
+include FactoryBot::Syntax::Methods
+
+puts "Clearing existing records..."
+MenuMenuItem.destroy_all
+Menu.destroy_all
+MenuItem.destroy_all
+Restaurant.destroy_all
+
+puts "Seeding Restaurants, Menus, Menu Items, and Associations..."
+
+5.times do
+  restaurant = create(:restaurant)
+  puts "Created Restaurant: #{restaurant.name}"
+
+  2.times do
+    menu = create(:menu, restaurant: restaurant)
+    puts "  Created Menu: #{menu.name}"
+
+    3.times do
+      menu_item = create(:menu_item)
+      price = Faker::Commerce.price(range: 5.0..50.0)
+      create(:menu_menu_item, menu: menu, menu_item: menu_item, price: price)
+      puts "    Associated Menu Item: #{menu_item.name} at $#{price}"
+    end
+  end
+end
+
+puts "Seeding done!"
+puts "Restaurants: #{Restaurant.count}, Menus: #{Menu.count}, Menu Items: #{MenuItem.count}, Associations: #{MenuMenuItem.count}"
