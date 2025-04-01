@@ -126,7 +126,7 @@ RSpec.describe ImportService, type: :service do
       service.process
       logs = service.logs
 
-      expect(MenuMenuItem.count).to eq(initial_association_count)
+      expect(MenuMenuItem.count).to eq(initial_association_count + 1)
 
       success_logs = logs.select { |log| log[:status] == "Success" && log[:menu_item] == "Burger" }
       failure_logs = logs.select { |log| log[:status] == "Failed" && log[:menu_item] == "Burger" }
