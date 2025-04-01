@@ -6,6 +6,8 @@ RSpec.describe Restaurant, type: :model do
   end
 
   describe 'validations' do
+    subject { build(:restaurant) }
+
     it { should validate_presence_of(:name) }
   end
 end

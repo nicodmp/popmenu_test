@@ -7,7 +7,7 @@ RSpec.describe MenuItem, type: :model do
   end
 
   describe 'validations' do
-    subject { MenuItem.create(name: 'Unique Dish', description: 'Unique test dish') }
+    subject { create(:menu_item) }
 
     it { should validate_presence_of(:name) }
     it { should validate_uniqueness_of(:name) }

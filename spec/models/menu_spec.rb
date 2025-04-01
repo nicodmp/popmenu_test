@@ -8,6 +8,8 @@ RSpec.describe Menu, type: :model do
   end
 
   describe 'validations' do
+    subject { build(:menu) }
+
     it { should validate_presence_of(:name) }
   end
 end
