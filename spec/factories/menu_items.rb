@@ -4,4 +4,3 @@ FactoryBot.define do
       description { Faker::Food.description }
     end
   end
-  
